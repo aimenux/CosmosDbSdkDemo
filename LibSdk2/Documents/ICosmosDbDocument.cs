@@ -1,4 +1,4 @@
-﻿namespace LibSdk2
+﻿namespace LibSdk2.Documents
 {
     public interface ICosmosDbDocument
     {

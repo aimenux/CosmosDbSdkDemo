@@ -1,37 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LibSdk2.Settings;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Linq;
 
 namespace LibSdk2
 {
-    public sealed class CosmosDbRepository<TDocument> : ICosmosDbRepository<TDocument> where TDocument : ICosmosDbDocument
+    public sealed class CosmosDbRepository : ICosmosDbRepository
     {
-        private readonly Uri _collectionUri;
-        private readonly DocumentClient _documentClient;
+        private readonly IDocumentClient _documentClient;
+        private readonly ICosmosDbSettings _cosmosDbSettings;
 
-        public CosmosDbRepository(CosmosDbSettings settings)
+        public CosmosDbRepository(ICosmosDbSettings cosmosDbSettings)
         {
-            var endpointUri = new Uri(settings.EndpointUrl);
-            _collectionUri = UriFactory.CreateDocumentCollectionUri(settings.DatabaseName, settings.CollectionName);
-            _documentClient = new DocumentClient(endpointUri, settings.AuthorizationKey, settings.ConnectionPolicy);
-            ValidateCosmosDbConnection();
+            _cosmosDbSettings = cosmosDbSettings;
+            _documentClient = new DocumentClient(
+                new Uri(cosmosDbSettings.EndpointUrl),
+                cosmosDbSettings.AuthorizationKey,
+                cosmosDbSettings.ConnectionPolicy);
+            ValidateCosmosDbClientAndSettings();
         }
 
-        public Task<ICollection<TDocument>> GetDocumentsAsync(string query)
+        public async Task<ICollection<TDocument>> GetDocumentsAsync<TDocument>(string query, FeedOptions options = null)
         {
-            throw new System.NotImplementedException();
+            var documentUri = UriFactory.CreateDocumentCollectionUri(_cosmosDbSettings.DatabaseName, _cosmosDbSettings.CollectionName);
+            var documentQuery = _documentClient.CreateDocumentQuery<TDocument>(documentUri, query, options).AsDocumentQuery();
+            var documents = new List<TDocument>();
+            while (documentQuery.HasMoreResults)
+            {
+                var response = await documentQuery.ExecuteNextAsync<TDocument>();
+                documents.AddRange(response);
+            }
+            return documents;
         }
 
         public void Dispose()
         {
-            _documentClient?.Dispose();
+            (_documentClient as DocumentClient)?.Dispose();
         }
 
-        private void ValidateCosmosDbConnection()
+        private void ValidateCosmosDbClientAndSettings()
         {
-            _documentClient.OpenAsync().GetAwaiter().GetResult();
-            _documentClient.ReadDocumentCollectionAsync(_collectionUri).GetAwaiter().GetResult();
+            (_documentClient as DocumentClient)?.OpenAsync().GetAwaiter().GetResult();
+            var collectionUri = UriFactory.CreateDocumentCollectionUri(
+                _cosmosDbSettings.DatabaseName,
+                _cosmosDbSettings.CollectionName);
+            _documentClient.ReadDocumentCollectionAsync(collectionUri).GetAwaiter().GetResult();
         }
     }
 }

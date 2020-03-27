@@ -1,8 +1,8 @@
 ﻿using Microsoft.Azure.Documents.Client;
 
-namespace LibSdk2
+namespace LibSdk2.Settings
 {
-    public class CosmosDbSettings
+    public class CosmosDbSettings : ICosmosDbSettings
     {
         public string EndpointUrl { get; set; }
         public string AuthorizationKey { get; set; }
