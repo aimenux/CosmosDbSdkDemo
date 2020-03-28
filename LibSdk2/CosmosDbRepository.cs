@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using LibSdk2.Models;
 using LibSdk2.Settings;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -23,17 +23,17 @@ namespace LibSdk2
             ValidateCosmosDbClientAndSettings();
         }
 
-        public async Task<ICollection<TDocument>> GetDocumentsAsync<TDocument>(string query, FeedOptions options = null)
+        public async Task<CosmosDbResponse<TDocument>> GetCosmosDbResponseAsync<TDocument>(CosmosDbRequest request)
         {
             var documentUri = UriFactory.CreateDocumentCollectionUri(_cosmosDbSettings.DatabaseName, _cosmosDbSettings.CollectionName);
-            var documentQuery = _documentClient.CreateDocumentQuery<TDocument>(documentUri, query, options).AsDocumentQuery();
-            var documents = new List<TDocument>();
+            var documentQuery = _documentClient.CreateDocumentQuery<TDocument>(documentUri, request.Query, request.Options).AsDocumentQuery();
+            var cosmosDbResponse = new CosmosDbResponse<TDocument>();
             while (documentQuery.HasMoreResults)
             {
-                var response = await documentQuery.ExecuteNextAsync<TDocument>();
-                documents.AddRange(response);
+                var feedResponse = await documentQuery.ExecuteNextAsync<TDocument>();
+                cosmosDbResponse.AddRange(feedResponse);
             }
-            return documents;
+            return cosmosDbResponse;
         }
 
         public void Dispose()

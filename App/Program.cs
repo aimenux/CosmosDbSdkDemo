@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using LibSdk2;
+using LibSdk2.Models;
 using LibSdk2.Settings;
-using Microsoft.Azure.Documents.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -34,6 +34,7 @@ namespace App
 
             var serviceProvider = services.BuildServiceProvider();
 
+            Target(nameof(Targets.Default), DependsOn(nameof(Targets.Query)));
             Target(nameof(Targets.Query), async () =>
             {
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
@@ -42,9 +43,9 @@ namespace App
                 {
                     var query = cosmosDbQuery.Query;
                     var enableCrossPartition = cosmosDbQuery.EnableCrossPartition;
-                    var options = new FeedOptions { EnableCrossPartitionQuery = enableCrossPartition };
-                    var documents = await repository.GetDocumentsAsync<dynamic>(query, options);
-                    Console.WriteLine($"Found '{documents.Count}' documents for Query '{query}'");
+                    var request = new CosmosDbRequest(query, enableCrossPartition);
+                    var response = await repository.GetCosmosDbResponseAsync<dynamic>(request);
+                    PrintSummary(request, response);
                 }
             });
 
@@ -54,8 +55,17 @@ namespace App
             Console.ReadKey();
         }
 
+        private static void PrintSummary(CosmosDbRequest request, CosmosDbResponse<dynamic> response)
+        {
+            Console.WriteLine($"Query: {request.Query}");
+            Console.WriteLine($"EnableCrossPartition: {request.Options.EnableCrossPartitionQuery}");
+            Console.WriteLine($"Found: {response.Documents.Count} document(s)");
+            Console.WriteLine($"RequestUnits: {response.RequestUnits} RU");
+        }
+
         public enum Targets
         {
+            Default,
             Query
         }
     }
