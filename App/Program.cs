@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using LibSdk2;
 using LibSdk2.Models;
 using LibSdk2.Settings;
@@ -39,11 +40,9 @@ namespace App
             {
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbQueries = serviceProvider.GetService<IOptions<CosmosDbQueries>>().Value;
-                foreach (var cosmosDbQuery in cosmosDbQueries)
+                var cosmosDbRequests = cosmosDbQueries.Select(x => new CosmosDbRequest(x));
+                foreach (var request in cosmosDbRequests)
                 {
-                    var query = cosmosDbQuery.Query;
-                    var enableCrossPartition = cosmosDbQuery.EnableCrossPartition;
-                    var request = new CosmosDbRequest(query, enableCrossPartition);
                     var response = await repository.GetCosmosDbResponseAsync<dynamic>(request);
                     PrintSummary(request, response);
                 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Documents.Client;
+﻿using LibSdk2.Settings;
+using Microsoft.Azure.Documents.Client;
 
 namespace LibSdk2.Models
 {
@@ -13,6 +14,15 @@ namespace LibSdk2.Models
             Options = new FeedOptions
             {
                 EnableCrossPartitionQuery = enableCrossPartition
+            };
+        }
+
+        public CosmosDbRequest(CosmosDbQuery cosmosDbQuery)
+        {
+            Query = cosmosDbQuery.Query;
+            Options = new FeedOptions
+            {
+                EnableCrossPartitionQuery = cosmosDbQuery.EnableCrossPartition
             };
         }
     }
