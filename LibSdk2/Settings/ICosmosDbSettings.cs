@@ -8,6 +8,8 @@ namespace LibSdk2.Settings
         string AuthorizationKey { get; set; }
         string DatabaseName { get; set; }
         string CollectionName { get; set; }
+        int DatabaseThroughput { get; set; }
+        string PartitionKeyName { get; set; }
         ConnectionPolicy ConnectionPolicy { get; set; }
     }
 }

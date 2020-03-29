@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
-using LibSdk2.Models;
-using Microsoft.Azure.Documents.Client;
+using LibSdk2.Models.CreateModels;
+using LibSdk2.Models.DestroyModels;
+using LibSdk2.Models.QueryModels;
 
 namespace LibSdk2
 {
     public interface ICosmosDbRepository : IDisposable
     {
-        Task<CosmosDbResponse<TDocument>> GetCosmosDbResponseAsync<TDocument>(CosmosDbRequest request);
+        Task<CosmosDbQueryResponse> QueryCosmosDbAsync(CosmosDbQueryRequest request);
+        Task<CosmosDbQueryResponse<TDocument>> QueryCosmosDbAsync<TDocument>(CosmosDbQueryRequest request);
+        Task<CosmosDbCreateResponse> CreateCosmosDbAsync(CosmosDbCreateRequest request);
+        Task<CosmosDbDestroyResponse> DestroyCosmosDbAsync(CosmosDbDestroyRequest request);
     }
 }

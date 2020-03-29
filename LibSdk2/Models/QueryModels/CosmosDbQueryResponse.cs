@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Azure.Documents.Client;
 
-namespace LibSdk2.Models
+namespace LibSdk2.Models.QueryModels
 {
-    public class CosmosDbResponse<TDocument>
+    public class CosmosDbQueryResponse<TDocument>
     {
         public double RequestUnits { get; private set; }
         public ICollection<TDocument> Documents { get; }
 
-        public CosmosDbResponse(ICollection<TDocument> documents = null)
+        public CosmosDbQueryResponse(ICollection<TDocument> documents = null)
         {
             RequestUnits = 0f;
             Documents = documents ?? new List<TDocument>();
@@ -26,5 +26,9 @@ namespace LibSdk2.Models
                 }
             }
         }
+    }
+
+    public class CosmosDbQueryResponse : CosmosDbQueryResponse<dynamic>
+    {
     }
 }
