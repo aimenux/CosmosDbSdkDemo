@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using LibSdk2.Models;
 using LibSdk2.Models.CreateModels;
 using LibSdk2.Models.DestroyModels;
+using LibSdk2.Models.InsertModels;
 using LibSdk2.Models.QueryModels;
 using LibSdk2.Settings;
 using Microsoft.Azure.Documents;
@@ -29,8 +29,8 @@ namespace LibSdk2
 
         public async Task<CosmosDbQueryResponse> QueryCosmosDbAsync(CosmosDbQueryRequest request)
         {
-            var response = await QueryCosmosDbAsync<dynamic>(request);
-            return (CosmosDbQueryResponse) response;
+            var response = await QueryCosmosDbAsync<Document>(request);
+            return new CosmosDbQueryResponse(response);
         }
 
         public async Task<CosmosDbQueryResponse<TDocument>> QueryCosmosDbAsync<TDocument>(CosmosDbQueryRequest request)
@@ -43,6 +43,20 @@ namespace LibSdk2
                 cosmosDbResponse.AddRange(feedResponse);
             }
             return cosmosDbResponse;
+        }
+
+        public async Task<CosmosDbInsertResponse> InsertCosmosDbAsync(CosmosDbInsertRequest request)
+        {
+            var options = request.Options;
+            var document = request.Document;
+
+            if (document == null)
+            {
+                return new CosmosDbInsertResponse();
+            }
+
+            var resourceResponse = await _documentClient.CreateDocumentAsync(_collectionUri, document, options);
+            return new CosmosDbInsertResponse(resourceResponse.RequestCharge, resourceResponse.Resource);
         }
 
         public async Task<CosmosDbCreateResponse> CreateCosmosDbAsync(CosmosDbCreateRequest request)

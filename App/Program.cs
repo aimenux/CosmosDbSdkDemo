@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LibSdk2;
 using LibSdk2.Models.CreateModels;
 using LibSdk2.Models.DestroyModels;
+using LibSdk2.Models.InsertModels;
 using LibSdk2.Models.QueryModels;
 using LibSdk2.Settings;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,7 @@ namespace App
             var services = new ServiceCollection();
             services.Configure<CosmosDbQueries>(configuration.GetSection(nameof(CosmosDbQueries)));
             services.Configure<CosmosDbSettings>(configuration.GetSection(nameof(CosmosDbSettings)));
+            services.Configure<CosmosDbDocuments>(configuration.GetSection(nameof(CosmosDbDocuments)));
             services.AddSingleton<ICosmosDbPrinter, CosmosDbPrinter>();
             services.AddSingleton<ICosmosDbRepository>(provider =>
             {
@@ -41,10 +43,11 @@ namespace App
 
             var serviceProvider = services.BuildServiceProvider();
 
-            Target(nameof(Targets.Default), DependsOn(nameof(Targets.Create)));
+            Target(nameof(Targets.Default), DependsOn(nameof(Targets.Create), nameof(Targets.Destroy)));
 
             Target(nameof(Targets.Create), async () =>
             {
+                WaitForTargetConfirmation(nameof(Targets.Create));
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbSettings = serviceProvider.GetService<IOptions<CosmosDbSettings>>().Value;
@@ -53,18 +56,23 @@ namespace App
                 printer.Print(request, response);
             });
 
-            Target(nameof(Targets.Destroy), async () =>
+            Target(nameof(Targets.Insert), DependsOn(nameof(Targets.Create)), async () =>
             {
+                WaitForTargetConfirmation(nameof(Targets.Insert));
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
-                var cosmosDbSettings = serviceProvider.GetService<IOptions<CosmosDbSettings>>().Value;
-                var request = new CosmosDbDestroyRequest(cosmosDbSettings);
-                var response = await repository.DestroyCosmosDbAsync(request);
-                printer.Print(request, response);
+                var cosmosDbDocuments = serviceProvider.GetService<IOptions<CosmosDbDocuments>>().Value;
+                var cosmosDbRequests = cosmosDbDocuments.Select(x => new CosmosDbInsertRequest(x));
+                foreach (var request in cosmosDbRequests)
+                {
+                    var response = await repository.InsertCosmosDbAsync(request);
+                    printer.Print(request, response);
+                }
             });
 
-            Target(nameof(Targets.Query), async () =>
+            Target(nameof(Targets.Query), DependsOn(nameof(Targets.Insert)), async () =>
             {
+                WaitForTargetConfirmation(nameof(Targets.Query));
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbQueries = serviceProvider.GetService<IOptions<CosmosDbQueries>>().Value;
@@ -76,18 +84,27 @@ namespace App
                 }
             });
 
+            Target(nameof(Targets.Destroy), DependsOn(nameof(Targets.Query)), async () =>
+            {
+                WaitForTargetConfirmation(nameof(Targets.Destroy));
+                var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
+                var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
+                var cosmosDbSettings = serviceProvider.GetService<IOptions<CosmosDbSettings>>().Value;
+                var request = new CosmosDbDestroyRequest(cosmosDbSettings);
+                var response = await repository.DestroyCosmosDbAsync(request);
+                printer.Print(request, response);
+            });
+
             await RunTargetsWithoutExitingAsync(args);
 
             Console.WriteLine("Press any key to exit !");
             Console.ReadKey();
         }
 
-        public enum Targets
+        private static void WaitForTargetConfirmation(string target)
         {
-            Default,
-            Create,
-            Destroy,
-            Query
+            ConsoleColor.Yellow.WriteLine($"Press any key to run '{target}'");
+            Console.ReadKey();
         }
     }
 }
