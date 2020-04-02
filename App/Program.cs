@@ -47,7 +47,7 @@ namespace App
 
             Target(nameof(Targets.Create), async () =>
             {
-                WaitForTargetConfirmation(nameof(Targets.Create));
+                Targets.Create.WaitForConfirmation();
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbSettings = serviceProvider.GetService<IOptions<CosmosDbSettings>>().Value;
@@ -58,7 +58,7 @@ namespace App
 
             Target(nameof(Targets.Insert), DependsOn(nameof(Targets.Create)), async () =>
             {
-                WaitForTargetConfirmation(nameof(Targets.Insert));
+                Targets.Insert.WaitForConfirmation();
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbDocuments = serviceProvider.GetService<IOptions<CosmosDbDocuments>>().Value;
@@ -72,7 +72,7 @@ namespace App
 
             Target(nameof(Targets.Query), DependsOn(nameof(Targets.Insert)), async () =>
             {
-                WaitForTargetConfirmation(nameof(Targets.Query));
+                Targets.Query.WaitForConfirmation();
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbQueries = serviceProvider.GetService<IOptions<CosmosDbQueries>>().Value;
@@ -86,7 +86,7 @@ namespace App
 
             Target(nameof(Targets.Destroy), DependsOn(nameof(Targets.Query)), async () =>
             {
-                WaitForTargetConfirmation(nameof(Targets.Destroy));
+                Targets.Destroy.WaitForConfirmation();
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbSettings = serviceProvider.GetService<IOptions<CosmosDbSettings>>().Value;
@@ -98,12 +98,6 @@ namespace App
             await RunTargetsWithoutExitingAsync(args);
 
             Console.WriteLine("Press any key to exit !");
-            Console.ReadKey();
-        }
-
-        private static void WaitForTargetConfirmation(string target)
-        {
-            ConsoleColor.Yellow.WriteLine($"Press any key to run '{target}'");
             Console.ReadKey();
         }
     }

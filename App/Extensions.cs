@@ -10,5 +10,11 @@ namespace App
             Console.WriteLine(value);
             Console.ResetColor();
         }
+
+        public static void WaitForConfirmation(this Targets target)
+        {
+            ConsoleColor.Yellow.WriteLine($"Press any key to run '{target}'");
+            Console.ReadKey();
+        }
     }
 }
