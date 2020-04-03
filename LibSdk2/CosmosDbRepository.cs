@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using LibSdk2.Models.CreateModels;
+using LibSdk2.Models.DeleteModels;
 using LibSdk2.Models.DestroyModels;
 using LibSdk2.Models.InsertModels;
 using LibSdk2.Models.QueryModels;
@@ -16,9 +17,11 @@ namespace LibSdk2
         private readonly Uri _databaseUri;
         private readonly Uri _collectionUri;
         private readonly DocumentClient _documentClient;
+        private readonly ICosmosDbSettings _cosmosDbSettings;
 
         public CosmosDbRepository(ICosmosDbSettings cosmosDbSettings)
         {
+            _cosmosDbSettings = cosmosDbSettings;
             _documentClient = new DocumentClient(
                 new Uri(cosmosDbSettings.EndpointUrl),
                 cosmosDbSettings.AuthorizationKey,
@@ -57,6 +60,24 @@ namespace LibSdk2
 
             var resourceResponse = await _documentClient.CreateDocumentAsync(_collectionUri, document, options);
             return new CosmosDbInsertResponse(resourceResponse.RequestCharge, resourceResponse.Resource);
+        }
+
+        public async Task<CosmosDbDeleteResponse> DeleteCosmosDbAsync(CosmosDbDeleteRequest request)
+        {
+            var options = request.Options;
+            var document = request.Document;
+
+            if (document == null)
+            {
+                return new CosmosDbDeleteResponse();
+            }
+
+            var documentId = document.Id;
+            var databaseId = _cosmosDbSettings.DatabaseName;
+            var collectionId = _cosmosDbSettings.CollectionName;
+            var documentUri = UriFactory.CreateDocumentUri(databaseId, collectionId, documentId);
+            var resourceResponse = await _documentClient.DeleteDocumentAsync(documentUri, options);
+            return new CosmosDbDeleteResponse(resourceResponse.RequestCharge, resourceResponse.Resource);
         }
 
         public async Task<CosmosDbCreateResponse> CreateCosmosDbAsync(CosmosDbCreateRequest request)

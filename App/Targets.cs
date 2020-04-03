@@ -6,6 +6,7 @@
         Create,
         Destroy,
         Query,
-        Insert
+        Insert,
+        Delete
     }
 }

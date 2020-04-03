@@ -4,23 +4,23 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 
-namespace LibSdk2.Models.InsertModels
+namespace LibSdk2.Models.DeleteModels
 {
-    public class CosmosDbInsertRequest<TDocument>
+    public class CosmosDbDeleteRequest<TDocument>
     {
         public TDocument Document { get; protected set; }
         public RequestOptions Options { get; protected set; }
 
-        public CosmosDbInsertRequest(TDocument document = default, RequestOptions options = null)
+        public CosmosDbDeleteRequest(TDocument document = default, RequestOptions options = null)
         {
             Document = document;
             Options = options;
         }
     }
 
-    public class CosmosDbInsertRequest : CosmosDbInsertRequest<Document>
+    public class CosmosDbDeleteRequest : CosmosDbDeleteRequest<Document>
     {
-        public CosmosDbInsertRequest(CosmosDbDocument cosmosDbDocument, ICosmosDbSettings settings)
+        public CosmosDbDeleteRequest(CosmosDbDocument cosmosDbDocument, ICosmosDbSettings settings)
         {
             var json = cosmosDbDocument.Document;
             using (var reader = new JsonTextReader(new StringReader(json)))

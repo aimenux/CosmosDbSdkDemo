@@ -1,5 +1,6 @@
 ﻿using System;
 using LibSdk2.Models.CreateModels;
+using LibSdk2.Models.DeleteModels;
 using LibSdk2.Models.DestroyModels;
 using LibSdk2.Models.InsertModels;
 using LibSdk2.Models.QueryModels;
@@ -17,6 +18,12 @@ namespace LibSdk2
         }
 
         public void Print(CosmosDbInsertRequest request, CosmosDbInsertResponse response)
+        {
+            Console.WriteLine($"Document: {request.Document}");
+            Console.WriteLine($"RequestUnits: {response.RequestUnits} RU");
+        }
+
+        public void Print(CosmosDbDeleteRequest request, CosmosDbDeleteResponse response)
         {
             Console.WriteLine($"Document: {request.Document}");
             Console.WriteLine($"RequestUnits: {response.RequestUnits} RU");

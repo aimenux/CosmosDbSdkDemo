@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LibSdk2;
 using LibSdk2.Models.CreateModels;
+using LibSdk2.Models.DeleteModels;
 using LibSdk2.Models.DestroyModels;
 using LibSdk2.Models.InsertModels;
 using LibSdk2.Models.QueryModels;
@@ -61,8 +62,9 @@ namespace App
                 Targets.Insert.WaitForConfirmation();
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
+                var cosmosDbSettings = serviceProvider.GetService<IOptions<CosmosDbSettings>>().Value;
                 var cosmosDbDocuments = serviceProvider.GetService<IOptions<CosmosDbDocuments>>().Value;
-                var cosmosDbRequests = cosmosDbDocuments.Select(x => new CosmosDbInsertRequest(x));
+                var cosmosDbRequests = cosmosDbDocuments.Select(x => new CosmosDbInsertRequest(x, cosmosDbSettings));
                 foreach (var request in cosmosDbRequests)
                 {
                     var response = await repository.InsertCosmosDbAsync(request);
@@ -84,7 +86,22 @@ namespace App
                 }
             });
 
-            Target(nameof(Targets.Destroy), DependsOn(nameof(Targets.Query)), async () =>
+            Target(nameof(Targets.Delete), DependsOn(nameof(Targets.Query)), async () =>
+            {
+                Targets.Delete.WaitForConfirmation();
+                var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
+                var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
+                var cosmosDbSettings = serviceProvider.GetService<IOptions<CosmosDbSettings>>().Value;
+                var cosmosDbDocuments = serviceProvider.GetService<IOptions<CosmosDbDocuments>>().Value;
+                var cosmosDbRequests = cosmosDbDocuments.Select(x => new CosmosDbDeleteRequest(x, cosmosDbSettings));
+                foreach (var request in cosmosDbRequests)
+                {
+                    var response = await repository.DeleteCosmosDbAsync(request);
+                    printer.Print(request, response);
+                }
+            });
+
+            Target(nameof(Targets.Destroy), DependsOn(nameof(Targets.Delete)), async () =>
             {
                 Targets.Destroy.WaitForConfirmation();
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
