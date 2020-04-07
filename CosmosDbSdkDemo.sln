@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibSdk3", "LibSdk3\LibSdk3.csproj", "{FDA7B308-318C-4EC5-9427-4FA3F9F9E73C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{970331C9-E279-41EE-8A64-92AF7F9141A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{970331C9-E279-41EE-8A64-92AF7F9141A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{970331C9-E279-41EE-8A64-92AF7F9141A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDA7B308-318C-4EC5-9427-4FA3F9F9E73C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA7B308-318C-4EC5-9427-4FA3F9F9E73C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA7B308-318C-4EC5-9427-4FA3F9F9E73C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA7B308-318C-4EC5-9427-4FA3F9F9E73C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

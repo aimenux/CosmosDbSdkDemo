@@ -8,14 +8,8 @@ namespace LibSdk2.Models.InsertModels
 {
     public class CosmosDbInsertRequest<TDocument>
     {
-        public TDocument Document { get; protected set; }
-        public RequestOptions Options { get; protected set; }
-
-        public CosmosDbInsertRequest(TDocument document = default, RequestOptions options = null)
-        {
-            Document = document;
-            Options = options;
-        }
+        public TDocument Document { get; set; }
+        public RequestOptions Options { get; set; }
     }
 
     public class CosmosDbInsertRequest : CosmosDbInsertRequest<Document>

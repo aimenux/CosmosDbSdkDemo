@@ -8,14 +8,8 @@ namespace LibSdk2.Models.DeleteModels
 {
     public class CosmosDbDeleteRequest<TDocument>
     {
-        public TDocument Document { get; protected set; }
-        public RequestOptions Options { get; protected set; }
-
-        public CosmosDbDeleteRequest(TDocument document = default, RequestOptions options = null)
-        {
-            Document = document;
-            Options = options;
-        }
+        public TDocument Document { get; set; }
+        public RequestOptions Options { get; set; }
     }
 
     public class CosmosDbDeleteRequest : CosmosDbDeleteRequest<Document>

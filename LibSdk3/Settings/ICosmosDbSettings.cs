@@ -1,6 +1,4 @@
-﻿using Microsoft.Azure.Documents.Client;
-
-namespace LibSdk2.Settings
+﻿namespace LibSdk3.Settings
 {
     public interface ICosmosDbSettings
     {
@@ -11,6 +9,5 @@ namespace LibSdk2.Settings
         int DatabaseThroughput { get; set; }
         string PartitionKeyPath { get; set; }
         string PartitionKeyName { get; }
-        ConnectionPolicy ConnectionPolicy { get; set; }
     }
 }

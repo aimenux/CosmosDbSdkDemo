@@ -1,20 +1,20 @@
-﻿using LibSdk2.Settings;
+﻿using LibSdk3.Settings;
 
-namespace LibSdk2.Models.CreateModels
+namespace LibSdk3.Models.CreateModels
 {
     public class CosmosDbCreateRequest
     {
         public string DatabaseName { get; }
         public string ContainerName { get; }
         public int DatabaseThroughput { get; }
-        public string PartitionKeyPath { get; }
+        public string PartitionKeyName { get; }
 
         public CosmosDbCreateRequest(ICosmosDbSettings settings)
         {
             DatabaseName = settings.DatabaseName;
             ContainerName = settings.ContainerName;
             DatabaseThroughput = settings.DatabaseThroughput;
-            PartitionKeyPath = settings.PartitionKeyPath;
+            PartitionKeyName = settings.PartitionKeyName;
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using LibSdk2.Settings;
+﻿using LibSdk3.Settings;
 
-namespace LibSdk2.Models.DestroyModels
+namespace LibSdk3.Models.DestroyModels
 {
     public class CosmosDbDestroyRequest
     {

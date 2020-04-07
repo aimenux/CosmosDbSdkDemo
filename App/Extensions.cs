@@ -1,9 +1,22 @@
 ﻿using System;
+using App.Bootstrappers;
 
 namespace App
 {
     public static class Extensions
     {
+        private static bool WaitForConfirmationIsDisabled
+        {
+            get
+            {
+#if RELEASE
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
+
         public static void WriteLine(this ConsoleColor color, object value)
         {
             Console.ForegroundColor = color;
@@ -11,9 +24,10 @@ namespace App
             Console.ResetColor();
         }
 
-        public static void WaitForConfirmation(this Targets target)
+        public static void WaitForConfirmation(this CosmosDbTargets target)
         {
-            ConsoleColor.Yellow.WriteLine($"Press any key to run '{target}'");
+            if (WaitForConfirmationIsDisabled) return;
+            ConsoleColor.Yellow.WriteLine($"\nPress any key to run '{target}'\n");
             Console.ReadKey();
         }
     }

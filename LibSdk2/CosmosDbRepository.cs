@@ -74,7 +74,7 @@ namespace LibSdk2
 
             var documentId = document.Id;
             var databaseId = _cosmosDbSettings.DatabaseName;
-            var collectionId = _cosmosDbSettings.CollectionName;
+            var collectionId = _cosmosDbSettings.ContainerName;
             var documentUri = UriFactory.CreateDocumentUri(databaseId, collectionId, documentId);
             var resourceResponse = await _documentClient.DeleteDocumentAsync(documentUri, options);
             return new CosmosDbDeleteResponse(resourceResponse.RequestCharge, resourceResponse.Resource);
@@ -85,8 +85,8 @@ namespace LibSdk2
             var database = new Database{ Id = request.DatabaseName };
             var databaseOptions = new RequestOptions { OfferThroughput = request.DatabaseThroughput };
             var databaseResponse = await _documentClient.CreateDatabaseIfNotExistsAsync(database, databaseOptions);
-            var collection = new DocumentCollection { Id = request.CollectionName, DefaultTimeToLive = -1 };
-            collection.PartitionKey.Paths.Add(request.PartitionKeyName);
+            var collection = new DocumentCollection { Id = request.ContainerName, DefaultTimeToLive = -1 };
+            collection.PartitionKey.Paths.Add(request.PartitionKeyPath);
             var collectionResponse = await _documentClient.CreateDocumentCollectionIfNotExistsAsync(_databaseUri, collection);
             var requestCharge = databaseResponse.RequestCharge + collectionResponse.RequestCharge;
             return new CosmosDbCreateResponse(requestCharge);
@@ -108,7 +108,7 @@ namespace LibSdk2
         private static (Uri, Uri) CreateCosmosDbUris(ICosmosDbSettings settings)
         {
             var databaseUri = UriFactory.CreateDatabaseUri(settings.DatabaseName);
-            var collectionUri = UriFactory.CreateDocumentCollectionUri(settings.DatabaseName, settings.CollectionName);
+            var collectionUri = UriFactory.CreateDocumentCollectionUri(settings.DatabaseName, settings.ContainerName);
             return (databaseUri, collectionUri);
         }
     }

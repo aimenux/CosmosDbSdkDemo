@@ -1,18 +1,17 @@
 ﻿using System;
-using LibSdk2.Models.CreateModels;
-using LibSdk2.Models.DeleteModels;
-using LibSdk2.Models.DestroyModels;
-using LibSdk2.Models.InsertModels;
-using LibSdk2.Models.QueryModels;
+using LibSdk3.Models.CreateModels;
+using LibSdk3.Models.DeleteModels;
+using LibSdk3.Models.DestroyModels;
+using LibSdk3.Models.InsertModels;
+using LibSdk3.Models.QueryModels;
 
-namespace LibSdk2
+namespace LibSdk3
 {
     public class CosmosDbPrinter : ICosmosDbPrinter
     {
         public void Print(CosmosDbQueryRequest request, CosmosDbQueryResponse response)
         {
             Console.WriteLine($"Query: {request.Query}");
-            Console.WriteLine($"EnableCrossPartition: {request.Options.EnableCrossPartitionQuery}");
             Console.WriteLine($"Found: {response.Documents.Count} document(s)");
             Console.WriteLine($"RequestUnits: {response.RequestUnits} RU");
         }

@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LibSdk2\LibSdk2.csproj" />
+    <ProjectReference Include="..\LibSdk3\LibSdk3.csproj" />
   </ItemGroup>
 
   <ItemGroup>

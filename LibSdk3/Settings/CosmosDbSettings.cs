@@ -1,7 +1,6 @@
 ﻿using System;
-using Microsoft.Azure.Documents.Client;
 
-namespace LibSdk2.Settings
+namespace LibSdk3.Settings
 {
     public class CosmosDbSettings : ICosmosDbSettings
     {
@@ -12,16 +11,6 @@ namespace LibSdk2.Settings
         public int DatabaseThroughput { get; set; }
         public string PartitionKeyPath { get; set; }
         public string PartitionKeyName => GetPartitionKeyName();
-        public ConnectionPolicy ConnectionPolicy { get; set; }
-
-        public CosmosDbSettings()
-        {
-            ConnectionPolicy = new ConnectionPolicy
-            {
-                ConnectionProtocol = Protocol.Tcp,
-                ConnectionMode = ConnectionMode.Direct
-            };
-        }
 
         private string GetPartitionKeyName()
         {
