@@ -4,24 +4,24 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Bullseye;
-using LibSdk3;
-using LibSdk3.Models.CreateModels;
-using LibSdk3.Models.DeleteModels;
-using LibSdk3.Models.DestroyModels;
-using LibSdk3.Models.InsertModels;
-using LibSdk3.Models.QueryModels;
-using LibSdk3.Settings;
+using LibSdk2;
+using LibSdk2.Models.CreateModels;
+using LibSdk2.Models.DeleteModels;
+using LibSdk2.Models.DestroyModels;
+using LibSdk2.Models.InsertModels;
+using LibSdk2.Models.QueryModels;
+using LibSdk2.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace App.Bootstrappers
+namespace App.Launchers
 {
-    public class Sdk3Bootstrapper : ISdkBootstrapper
+    public class Sdk2Launcher : ISdkLauncher
     {
         private const string DefaultEnvironmentToUse = "DEV";
 
-        public string Name => "Azure Cosmos Db SDK 3";
+        public string Name => "Azure Cosmos Db SDK 2";
 
         public async Task LaunchAsync(string[] args)
         {
@@ -49,9 +49,9 @@ namespace App.Bootstrappers
 
             var targets = new Targets();
 
-            targets.Add(nameof(CosmosDbTargets.Create), async () =>
+            targets.Add(nameof(LauncherTargets.Create), async () =>
             {
-                CosmosDbTargets.Create.WaitForConfirmation();
+                LauncherTargets.Create.WaitForConfirmation();
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbSettings = serviceProvider.GetService<IOptions<CosmosDbSettings>>().Value;
@@ -60,9 +60,9 @@ namespace App.Bootstrappers
                 printer.Print(request, response);
             });
 
-            targets.Add(nameof(CosmosDbTargets.Insert), new List<string> {nameof(CosmosDbTargets.Create)}, async () =>
+            targets.Add(nameof(LauncherTargets.Insert), new List<string> {nameof(LauncherTargets.Create)}, async () =>
             {
-                CosmosDbTargets.Insert.WaitForConfirmation();
+                LauncherTargets.Insert.WaitForConfirmation();
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbSettings = serviceProvider.GetService<IOptions<CosmosDbSettings>>().Value;
@@ -75,9 +75,9 @@ namespace App.Bootstrappers
                 }
             });
 
-            targets.Add(nameof(CosmosDbTargets.Query), new List<string> {nameof(CosmosDbTargets.Insert)}, async () =>
+            targets.Add(nameof(LauncherTargets.Query), new List<string> {nameof(LauncherTargets.Insert)}, async () =>
             {
-                CosmosDbTargets.Query.WaitForConfirmation();
+                LauncherTargets.Query.WaitForConfirmation();
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbQueries = serviceProvider.GetService<IOptions<CosmosDbQueries>>().Value;
@@ -89,9 +89,9 @@ namespace App.Bootstrappers
                 }
             });
 
-            targets.Add(nameof(CosmosDbTargets.Delete), new List<string> {nameof(CosmosDbTargets.Query)}, async () =>
+            targets.Add(nameof(LauncherTargets.Delete), new List<string> {nameof(LauncherTargets.Query)}, async () =>
             {
-                CosmosDbTargets.Delete.WaitForConfirmation();
+                LauncherTargets.Delete.WaitForConfirmation();
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbSettings = serviceProvider.GetService<IOptions<CosmosDbSettings>>().Value;
@@ -104,9 +104,9 @@ namespace App.Bootstrappers
                 }
             });
 
-            targets.Add(nameof(CosmosDbTargets.Destroy), new List<string> {nameof(CosmosDbTargets.Delete)}, async () =>
+            targets.Add(nameof(LauncherTargets.Destroy), new List<string> {nameof(LauncherTargets.Delete)}, async () =>
             {
-                CosmosDbTargets.Destroy.WaitForConfirmation();
+                LauncherTargets.Destroy.WaitForConfirmation();
                 var printer = serviceProvider.GetRequiredService<ICosmosDbPrinter>();
                 var repository = serviceProvider.GetRequiredService<ICosmosDbRepository>();
                 var cosmosDbSettings = serviceProvider.GetService<IOptions<CosmosDbSettings>>().Value;
@@ -115,7 +115,7 @@ namespace App.Bootstrappers
                 printer.Print(request, response);
             });
 
-            targets.Add(nameof(CosmosDbTargets.Default), new List<string> {nameof(CosmosDbTargets.Destroy)});
+            targets.Add(nameof(LauncherTargets.Default), new List<string> {nameof(LauncherTargets.Destroy)});
 
             await targets.RunWithoutExitingAsync(args);
         }

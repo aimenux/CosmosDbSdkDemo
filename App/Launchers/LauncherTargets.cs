@@ -1,6 +1,6 @@
-﻿namespace App.Bootstrappers
+﻿namespace App.Launchers
 {
-    public enum CosmosDbTargets
+    public enum LauncherTargets
     {
         Default,
         Create,

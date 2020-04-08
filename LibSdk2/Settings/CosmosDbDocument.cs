@@ -1,7 +1,33 @@
-﻿namespace LibSdk2.Settings
+﻿using System.IO;
+
+namespace LibSdk2.Settings
 {
     public class CosmosDbDocument
     {
-        public string Document { get; set; }
+        private string _document;
+
+        public string Document
+        {
+            get
+            {
+                if (IsJsonFile())
+                {
+                    _document = File.ReadAllText(_document);
+                }
+
+                return _document;
+            }
+            set => _document = value;
+        }
+
+        private bool IsJsonFile()
+        {
+            if (string.IsNullOrWhiteSpace(_document))
+            {
+                return false;
+            }
+
+            return !_document.StartsWith("{");
+        }
     }
 }

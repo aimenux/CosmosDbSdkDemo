@@ -1,5 +1,5 @@
 ﻿using System;
-using App.Bootstrappers;
+using App.Launchers;
 
 namespace App
 {
@@ -24,7 +24,7 @@ namespace App
             Console.ResetColor();
         }
 
-        public static void WaitForConfirmation(this CosmosDbTargets target)
+        public static void WaitForConfirmation(this LauncherTargets target)
         {
             if (WaitForConfirmationIsDisabled) return;
             ConsoleColor.Yellow.WriteLine($"\nPress any key to run '{target}'\n");

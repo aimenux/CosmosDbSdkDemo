@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace App.Bootstrappers
+namespace App.Launchers
 {
-    public interface ISdkBootstrapper
+    public interface ISdkLauncher
     {
         string Name { get; }
         Task LaunchAsync(string[] args);

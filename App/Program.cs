@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using App.Bootstrappers;
+using App.Launchers;
 
 namespace App
 {
@@ -8,16 +8,16 @@ namespace App
     {
         public static async Task Main(string[] args)
         {
-            var bootstrappers = new ISdkBootstrapper[]
+            var launchers = new ISdkLauncher[]
             {
-                new Sdk2Bootstrapper(),
-                new Sdk3Bootstrapper()
+                new Sdk2Launcher(),
+                new Sdk3Launcher()
             };
 
-            foreach (var bootstrapper in bootstrappers)
+            foreach (var launcher in launchers)
             {
-                ConsoleColor.Cyan.WriteLine(bootstrapper.Name);
-                await bootstrapper.LaunchAsync(args);
+                ConsoleColor.Cyan.WriteLine(launcher.Name);
+                await launcher.LaunchAsync(args);
             }
 
             Console.WriteLine("Press any key to exit !");
